@@ -8,12 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AlinaTrukhina/audio-API-1.git"
+    "url": "git+https://github.com/AlinaTrukhina/audio-API-2.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/AlinaTrukhina/audio-API-1/issues"
-  },
-  "homepage": "https://github.com/AlinaTrukhina/audio-API-1#readme"
+    "url": "https://github.com/AlinaTrukhina/audio-API-2/issues"
+  }
 }
