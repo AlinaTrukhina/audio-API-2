@@ -88,7 +88,7 @@ window.onload = function() {
 
             // create analyzer and define size of buffer array
             const analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 256;
+            analyser.fftSize = 512;
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
             console.log('buffer length', bufferLength);
@@ -100,10 +100,6 @@ window.onload = function() {
             const WIDTH = canvas.width;
             const HEIGHT = canvas.height;
 
-            let barWidth = (WIDTH / bufferLength);
-            let barHeight;
-            let x = 0;
-
             ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
             function renderFrame() {
@@ -113,11 +109,11 @@ window.onload = function() {
                     requestAnimationFrame(renderFrame);
                 } else {
                     console.log('in visualize stream, recording:', recording );
-                    // ctx.clearRect(0, 0, WIDTH, HEIGHT);
+                    ctx.clearRect(0, 0, WIDTH, HEIGHT);
                     return;
                 }
             
-                x = 0;
+                let x = 0;
             
                 analyser.getByteFrequencyData(dataArray);
             
@@ -125,36 +121,32 @@ window.onload = function() {
                 ctx.fillStyle = "#000";
                 ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-            
+                // define a line to draw for the oscillator
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "rgb(256, 256, 256)";
+                ctx.beginPath();
+
+                const sliceWidth = WIDTH / bufferLength;
+
                 for (let i = 0; i < bufferLength; i++) {
-                    barHeight = dataArray[i];
+                    const v = dataArray[i] / 128;
+                    // line will be drawn based on the center line
+                    const y = v * (HEIGHT / 2);
                     
-                    let r = barHeight + (30 * (i/bufferLength));
-                    let g = 255 * (i/bufferLength);
-                    let b = Math.pow(0.03 * x, 3);
+                    // draw the line
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
             
-                    // ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
-                    // ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-
-                    // ctx.fillStyle = `rgb(${255-barHeight}, ${255-barHeight}, 0)`;
-
-                    // this gives a light blue color
-                    // ctx.fillStyle = `rgb(${barHeight}, ${barHeight + 100}, ${barHeight + 100})`;
-
-                    // ctx.fillStyle = `rgb(${(barHeight + x*30)/5228+100}, ${(barHeight + x*30)/5228+150}, ${(barHeight + x*30)/5228+255})`;
-
-                    // ctx.fillStyle = `rgb(${255/x*50}, ${255/(-x^2 + 64)*50}, ${(x-20)/128*255})`;
-
-                    // ctx.fillStyle = `rgb(${255*(128/x)/128}, ${100/(0.1*(x-64)*(x-64))}, ${(x^2)/128*255 - 10})`;
-
-                    // ctx.fillStyle = `rgb(${255*(128/x)/128}, ${100/(0.1*(x-64)*(x-64))}, ${Math.pow(0.05 * x, 3)})`;
-
-                    ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
-                    ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-            
-                    x += barWidth + 1;
+                    x += sliceWidth;
                 }
+
+                ctx.lineTo(WIDTH, HEIGHT / 2);
+                ctx.stroke();
             }
+
             renderFrame();  
         }
     }
